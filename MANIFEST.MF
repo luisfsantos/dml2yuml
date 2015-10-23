@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Vendor: Instituto Superior Técnico
+Implementation-Title: dml2yuml
+Implementation-Version: 23 de Outubro de 2015
+Specified-By: Pedro Reis dos Santos
+Class-Path: antlr-4.5-complete.jar
+Specification-Vendor: Instituto Superior Técnico
+Specification-Title: Conversor de .dml para yuml.me
+Created-By: Pedro Reis dos Santos
+Specification-Version: 201510231848
+Main-Class: dml2yuml
