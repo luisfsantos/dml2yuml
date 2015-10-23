@@ -56,7 +56,7 @@ modifier: 'public' | 'protected' ;
 
 classBlock: '{' classSlot* '}' | ';' ;
 
-classSlot: modifiers typeSpec classSlotInternal ;
+classSlot: modifiers typeSpec classSlotInternal | METH ;
 
 classSlotInternal: ID slotOptions ';' ;
 
@@ -99,6 +99,7 @@ entityTypeId: identifier | '.' identifier ;
 
 ID: [a-zA-Z_$][a-zA-Z_0-9$]* ;
 INT: [0-9]+ ;
+METH: ( '///' (~[\n\r])* ) ;
 
 WS: [ \t\f\r\n]+ -> skip; // Whitespace -- ignored
 JCOM: ( '//' (~[\n\r])* ) -> skip; // Single-line comments
