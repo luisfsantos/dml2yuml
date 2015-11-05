@@ -1,9 +1,9 @@
-/*
- * Convert .dml file into yuml (yuml.me) format
+package dml;
+
+/* Convert .dml file into yuml (yuml.me) format
  *
  * compile: antlr4 dml.g4; javac -cp antlr-4.5-complete.jar:. *.java
  * run: java -cp antlr-4.5-complete.jar:. dml2yuml ex.dml
- * jar: jar -cfm dml2yuml.jar MANIFEST.MF *.class dml2yuml.java dml.g4 antlr-4.5-complete.jar
  * reis.santos@tecnico.ulisboa.pt (C)21oct2015
  */
 
@@ -60,13 +60,8 @@ public class dml2yuml {
                 out.print("[" + cl);
 		List<dmlParser.ClassSlotContext> slots = ctx.classBlock().classSlot();
 		if (atrib) {
-		  boolean first = true;
 		  if (slots.size() > 0) out.print("|");
 		  for (dmlParser.ClassSlotContext c: slots)
-		      if (c.METH() != null) {
-			  if (first) { first = false; out.print("|"); }
-			  out.print(" " + c.METH().getText().substring(3));
-		      } else
 		      out.print(" " + c.typeSpec().identifier().getText()
 			  + " " + c.classSlotInternal().ID().getText() + ";");
 		}
@@ -88,22 +83,18 @@ public class dml2yuml {
                 n = ctx.identifier().getText();
 		if (r0.roleName().ID() != null)
 		  n0 = r0.roleName().ID().getText();
-		if (r0.roleOptions().roleOption(0) != null &&
-		    r0.roleOptions().roleOption(0).multiplicityRange() != null)
-		  m0 = r0.roleOptions().roleOption(0).multiplicityRange().getText();
+		if (multiplicity && r0.roleOptions().roleOption(0) != null)
+		m0 = r0.roleOptions().roleOption(0).multiplicityRange().getText();
 		c0 = e0.getText();
-		if (!multiplicity) m0 = "";
 		if (!role) n0 = "";
 		rel = "[" + c0 + "]" + m0 + " " + n0 + " - ";
 
 		if (r1 != null) {
 		  if (r1.roleName().ID() != null)
 		    n1 = r1.roleName().ID().getText();
-		  if (r1.roleOptions().roleOption(0) != null &&
-		      r1.roleOptions().roleOption(0).multiplicityRange() != null)
-		    m1 = r1.roleOptions().roleOption(0).multiplicityRange().getText();
+		  if (multiplicity && r1.roleOptions().roleOption(0) != null)
+		  m1 = r1.roleOptions().roleOption(0).multiplicityRange().getText();
 		  c1 = e1.getText();
-		  if (!multiplicity) m1 = "";
 		  if (!role) n1 = "";
 		  rel += n1 + " " + m1 + "[" + c1 + "] // " + n;
 		} else rel = null; // must have two classes!!!
