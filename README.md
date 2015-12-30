@@ -1,9 +1,16 @@
 
   Convert .dml files into yuml (yuml.me) files.
 
+  flat/ hand-compile source files and build .jar
 
-  compile: antlr4 dml.g4; javac -cp antlr-4.5-complete.jar:. *.java
+  dml2yuml/ maven based tool
 
-  run: java -cp antlr-4.5-complete.jar:. dml2yuml ex.dml
+  dml2yuml-maven-plugin/ maven plugin to automate conversion
 
-  (C) reis.santos@tecnico.ulisboa.pt 21oct2015
+  example/ maven project with integrated automatic conversion in compilation
+
+  Do 'mvn install' in dml2yuml to generate the tool, then do 'mvn install'
+  in dml2yuml-maven-plugin/ to generate the plugin based in the tool.
+  Then use the resulting plugin in a an example/ project with 'mvn compile'.
+
+  (C) reis.santos(at)tecnico.ulisboa.pt 21oct2015
