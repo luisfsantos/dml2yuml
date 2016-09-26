@@ -13,10 +13,11 @@ import org.antlr.v4.runtime.*;
 
 public class dml2yuml {
     private static boolean multiplicity = true;
+    private static boolean names = true;
     private static boolean role = true;
     private static boolean atrib = true;
     private static PrintWriter out;
-    private static final String USAGE = "USAGE: dml2yuml [-a] [-m] [-r] file.dml [out.yuml]";
+    private static final String USAGE = "USAGE: dml2yuml [-a] [-m] [-n] [-r] file.dml [out.yuml]";
 
     public static void main(String[] args) throws Exception {
 	int argc = 0;
@@ -24,11 +25,13 @@ public class dml2yuml {
 	    System.err.println(USAGE + "\n"
 	    	+ "\t-a: omit attributes in classes\n"
 	    	+ "\t-m: omit multiplicity in associations\n"
+	    	+ "\t-n: omit names in associations\n"
 	    	+ "\t-r: omit role names in associations");
 	    return;
 	}
 	if (args.length > argc && args[argc].equals("-a")) { atrib = false; argc++; }
 	if (args.length > argc && args[argc].equals("-m")) { multiplicity = false; argc++; }
+	if (args.length > argc && args[argc].equals("-n")) { names = false; argc++; }
 	if (args.length > argc && args[argc].equals("-r")) { role = false; argc++; }
 	if (args.length <= argc) {
 	    System.err.println(USAGE + "\n\tfile.dml: missing.");
@@ -99,7 +102,8 @@ public class dml2yuml {
 		  m1 = r1.roleOptions().roleOption(0).multiplicityRange().getText();
 		  c1 = e1.getText();
 		  if (!role) n1 = "";
-		  rel += n1 + " " + m1 + "[" + c1 + "] // " + n;
+		  rel += n1 + " " + m1 + "[" + c1 + "]";
+		  if (names) rel += " // " + n;
 		} else rel = null; // must have two classes!!!
                 if (rel != null) out.println(rel);
                 // System.err.println("LIST: "+ctx.getText());
@@ -109,9 +113,11 @@ public class dml2yuml {
 	out.close();
     }
     public static boolean printMultiplicity() { return multiplicity; }
+    public static boolean printNames() { return names; }
     public static boolean printRole() { return role; }
     public static boolean printAttributes() { return atrib; }
     public static void omitMultiplicity() { multiplicity = false; }
+    public static void omitNames() { names = false; }
     public static void omitRole() { role = false; }
     public static void omitAttributes() { atrib = false; }
     public static void writer(PrintWriter wrt) { out = wrt; }

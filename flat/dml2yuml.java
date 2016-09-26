@@ -1,10 +1,9 @@
-package dml;
-
 /* Convert .dml file into yuml (yuml.me) format
  *
  * compile: antlr4 dml.g4; javac -cp antlr-4.5-complete.jar:. *.java
  * run: java -cp antlr-4.5-complete.jar:. dml2yuml ex.dml
- * reis.santos@tecnico.ulisboa.pt (C)21oct2015
+ *
+ * reis.santos(at)tecnico.ulisboa.pt (C)21oct2015
  */
 
 import java.io.*;
@@ -39,6 +38,9 @@ public class dml2yuml {
 	else
 	    out = new PrintWriter(System.out);
 	InputStream in = new FileInputStream(args[argc]);
+	execute(in);
+    }
+    public static void execute(InputStream in) throws Exception {
         dmlLexer l = new dmlLexer(new ANTLRInputStream(in));
         dmlParser p = new dmlParser(new CommonTokenStream(l));
         p.addErrorListener(new BaseErrorListener() {
@@ -105,4 +107,11 @@ public class dml2yuml {
         p.dml();
 	out.close();
     }
+    public static boolean printMultiplicity() { return multiplicity; }
+    public static boolean printRole() { return role; }
+    public static boolean printAttributes() { return atrib; }
+    public static void omitMultiplicity() { multiplicity = false; }
+    public static void omitRole() { role = false; }
+    public static void omitAttributes() { atrib = false; }
+    public static void writer(PrintWriter wrt) { out = wrt; }
 }
