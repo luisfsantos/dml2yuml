@@ -1,38 +1,39 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>pt.tecnico.example</groupId>
-  <artifactId>example</artifactId>
-  <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>example</name>
-  <url>https://github.com/pedroreissantos/dml2yuml</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
-
-  <build>
-    <plugins>
-      <plugin>
-	<groupId>pt.tecnico.plugin</groupId>
-	<artifactId>dml2yuml-maven-plugin</artifactId>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>pt.tecnico.example</groupId>
+	<artifactId>example</artifactId>
+	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<configuration>
-	  <names>false</names>
-	  <outputDirectory>info</outputDirectory>
-	  <url>http://yuml.me/diagram/scruffy;dir:lr/class/</url>
-	</configuration>
-	<executions>
-	  <execution>
-	    <phase>compile</phase>
-	    <goals>
-	      <goal>dml2yuml</goal>
-	    </goals>
-	  </execution>
-	</executions>
-      </plugin>
-    </plugins>
-  </build>
+	<name>example</name>
+	<url>https://github.com/pedroreissantos/dml2yuml</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>pt.tecnico.plugin</groupId>
+				<artifactId>dml2yuml-maven-plugin</artifactId>
+				<version>1.0-SNAPSHOT</version>
+				<configuration>
+					<names>false</names>
+					<outputDirectory>info</outputDirectory>
+					<url>http://yuml.me/diagram/scruffy;dir:lr/class/</url>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>dml2yuml</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

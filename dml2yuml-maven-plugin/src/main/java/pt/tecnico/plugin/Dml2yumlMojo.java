@@ -17,87 +17,115 @@ import pt.tecnico.dml2yuml.dml2yuml;
 
 import java.net.URL;
 import com.github.axet.wget.WGet;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+
 /**
- *
+ * dml2yuml converter
  */
 @Mojo(	name = "dml2yuml",
 	defaultPhase = LifecyclePhase.PROCESS_SOURCES,
 	requiresProject = true)
 public class Dml2yumlMojo extends AbstractMojo {
 
-    /**
-     * The directory where the .dml files ({@code *.dml}) are located.
-     */
-    @Parameter(defaultValue = "${basedir}/src/main/dml")
-    private File sourceDirectory;
+	/**
+	 * The directory where the .dml files ({@code *.dml}) are located.
+	 */
+	@Parameter(defaultValue = "${basedir}/src/main/dml")
+	private File sourceDirectory;
 
-    /**
-     * Specify output directory where the .yuml files are generated.
-     */
-    @Parameter(defaultValue = "${project.build.directory}/")
-    private File outputDirectory;
+	/**
+	 * Specify output directory where the .yuml files are generated.
+	 */
+	@Parameter(defaultValue = "${project.build.directory}/")
+	private File outputDirectory;
 
-    /**
-     * Specify URL to generate images.
-     */
-    @Parameter(defaultValue = "")
-    private String url;
+	/**
+	 * Specify URL to generate images.
+	 */
+	@Parameter(defaultValue = "")
+	private String url;
 
-    /**
-     * Print multiplicity in associations.
-     */
-    @Parameter(property = "dml2yuml.multiplicity", defaultValue = "true")
-    protected boolean multiplicity;
+	/**
+	 * Print multiplicity in associations.
+	 */
+	@Parameter(property = "dml2yuml.multiplicity", defaultValue = "true")
+	protected boolean multiplicity;
 
-    /**
-     * Print names in associations.
-     */
-    @Parameter(property = "dml2yuml.names", defaultValue = "true")
-    protected boolean names;
+	/**
+	 * Print names in associations.
+	 */
+	@Parameter(property = "dml2yuml.names", defaultValue = "true")
+	protected boolean names;
 
-    /**
-     * Print role names in associations.
-     */
-    @Parameter(property = "dml2yuml.role", defaultValue = "true")
-    protected boolean role;
+	/**
+	 * Print role names in associations.
+	 */
+	@Parameter(property = "dml2yuml.role", defaultValue = "true")
+	protected boolean role;
 
-    /**
-     * Print commented attributes in classes.
-     */
-    @Parameter(property = "dml2yuml.attributes", defaultValue = "true")
-    protected boolean attributes;
+	/**
+	 * Print commented attributes in classes.
+	 */
+	@Parameter(property = "dml2yuml.attributes", defaultValue = "true")
+	protected boolean attributes;
 
 
-    public void execute() throws MojoExecutionException
-    {
-      try {
-	if (!multiplicity) dml2yuml.omitMultiplicity();
-	if (!names) dml2yuml.omitNames();
-	if (!role) dml2yuml.omitRole();
-	if (!attributes) dml2yuml.omitAttributes();
-	getLog().info( " dml2yuml:" );
-	if (sourceDirectory == null) {
-	  getLog().warn( "No src/main/dml directory!" );
-	  return;
+	public void execute() throws MojoExecutionException {
+		try {
+			if (!multiplicity) dml2yuml.omitMultiplicity();
+			if (!names) dml2yuml.omitNames();
+			if (!role) dml2yuml.omitRole();
+			if (!attributes) dml2yuml.omitAttributes();
+			getLog().info( " dml2yuml:" );
+			if (sourceDirectory == null) {
+				getLog().warn( "No src/main/dml directory!" );
+				return;
+			}
+			for (File f: sourceDirectory.listFiles()) {
+				String name = f.getName();
+				getLog().info( " " + name );
+				if (name.endsWith(".dml")) {
+					if (url == null || url.length() == 0) {
+						String out = name.substring(0, name.length() - 4) + ".yuml";
+						dml2yuml.writer(new PrintWriter(new File(outputDirectory, out), "UTF-8"));
+						dml2yuml.execute(new FileInputStream(f));
+					} else {
+						String out = name.substring(0, name.length() - 4) + ".png";
+						StringWriter str = new StringWriter();
+						dml2yuml.writer(new PrintWriter(str));
+						dml2yuml.execute(new FileInputStream(f));
+						URL cmd = new URL(url+str.toString().replaceAll("[\r]?\n", ", ").replaceAll(" ", "%20"));
+						ssl();
+						new WGet(cmd, new File(outputDirectory, out)).download();
+					}
+				}
+			}
+		} catch (Exception e) { getLog().warn(e); } // getLog().error(e);
 	}
-	for (File f: sourceDirectory.listFiles()) {
-	  String name = f.getName();
-	  getLog().info( "    " + name );
-	  if (name.endsWith(".dml")) {
-	    if (url == null || url.length() == 0) {
-	      String out = name.substring(0, name.length() - 4) + ".yuml";
-	      dml2yuml.writer(new PrintWriter(new File(outputDirectory, out), "UTF-8"));
-	      dml2yuml.execute(new FileInputStream(f));
-	    } else {
-	      String out = name.substring(0, name.length() - 4) + ".png";
-	      StringWriter str = new StringWriter();
-	      dml2yuml.writer(new PrintWriter(str));
-	      dml2yuml.execute(new FileInputStream(f));
-	      URL cmd = new URL(url+str.toString().replaceAll("[\r]?\n", ", ").replaceAll(" ", "%20"));
-	      new WGet(cmd, new File(outputDirectory, out)).download();
-	    }
-	  }
+	private void ssl() throws Exception {
+		TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+		    public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
+		    public void checkClientTrusted(X509Certificate[] certs, String authType) { }
+		    public void checkServerTrusted(X509Certificate[] certs, String authType) { }
+
+		} };
+
+		SSLContext sc = SSLContext.getInstance("SSL");
+		sc.init(null, trustAllCerts, new java.security.SecureRandom());
+		HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+		// Create all-trusting host name verifier
+		HostnameVerifier allHostsValid = new HostnameVerifier() {
+		    public boolean verify(String hostname, SSLSession session) { return true; }
+		};
+		// Install the all-trusting host verifier
+		HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 	}
-      } catch (Exception e) { getLog().warn(e); } // getLog().error(e);
-    }
 }
